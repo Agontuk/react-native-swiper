@@ -123,7 +123,8 @@ export default class extends Component {
     dotStyle: PropTypes.object,
     activeDotStyle: PropTypes.object,
     dotColor: PropTypes.string,
-    activeDotColor: PropTypes.string
+    activeDotColor: PropTypes.string,
+    onScroll: PropTypes.func
   }
 
   /**
@@ -319,6 +320,16 @@ export default class extends Component {
     }
   }
 
+  onScroll = e => {
+    this.props.onScroll({ x: e.nativeEvent.contentOffset.x });
+  }
+
+  onAndroidScroll = e => {
+    const event = e.nativeEvent;
+    const x = event.position * this.state.width + event.offset * this.state.width;
+    this.props.onScroll({ x });
+  }
+
   /**
    * Update index after scroll
    * @param  {object} offset content offset
@@ -437,7 +448,8 @@ export default class extends Component {
       if (typeof props[prop] === 'function' &&
         prop !== 'onMomentumScrollEnd' &&
         prop !== 'renderPagination' &&
-        prop !== 'onScrollBeginDrag'
+        prop !== 'onScrollBeginDrag' &&
+        prop !== 'onScroll'
       ) {
         let originResponder = props[prop]
         overrides[prop] = (e) => originResponder(e, this.fullState(), this)
@@ -555,8 +567,11 @@ export default class extends Component {
           contentOffset={this.state.offset}
           onScrollBeginDrag={this.onScrollBegin}
           onMomentumScrollEnd={this.onScrollEnd}
-          onScrollEndDrag={this.onScrollEndDrag}>
-          {pages}
+          onScrollEndDrag={this.onScrollEndDrag}
+          onScroll={this.onScroll}
+          scrollEventThrottle={16}
+        >
+            {pages}
         </ScrollView>
        )
     }
@@ -565,7 +580,9 @@ export default class extends Component {
         {...this.props}
         initialPage={this.props.loop ? this.state.index + 1 : this.state.index}
         onPageSelected={this.onScrollEnd}
-        style={{flex: 1}}>
+        style={{flex: 1}}
+        onPageScroll={this.onAndroidScroll}
+      >
         {pages}
       </ViewPagerAndroid>
     )
