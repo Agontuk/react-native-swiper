@@ -13,8 +13,7 @@ import {
   TouchableOpacity,
   ViewPagerAndroid,
   Platform,
-  ActivityIndicator,
-  ViewPropTypes
+  ActivityIndicator
 } from 'react-native'
 
 const { width, height } = Dimensions.get('window')
